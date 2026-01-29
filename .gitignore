@@ -4,3 +4,9 @@ playwright-report/
 test-results/
 .DS_Store
 *.log
+/.idea/copilot.data.migration.ask2agent.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/ui-autitester.iml
+/.idea/vcs.xml
+/.idea/workspace.xml

@@ -99,6 +99,15 @@ http://localhost:8080
 
 The project includes a comprehensive Playwright test suite covering all features.
 
+cd /Users/shailesh/codebase-new/ui-autitester && npx playwright install
+
+lsof -ti:8080 | xargs kill -9
+
+cd /Users/shailesh/codebase-new/ui-autitester && npx http-server medical-doc -p 8080 &
+
+curl -I http://localhost:8080/index.html
+
+
 ### Run all tests:
 ```bash
 npm test
