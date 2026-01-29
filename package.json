@@ -1,0 +1,22 @@
+{
+  "name": "ui-autitester",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Medical documentation system with patient profiles, case histories, and examination reports",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:ui": "npx playwright test --ui",
+    "test:headed": "npx playwright test --headed",
+    "test:report": "npx playwright show-report",
+    "serve": "npx http-server medical-doc -p 8080"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.58.0",
+    "http-server": "^14.1.1",
+    "playwright": "^1.58.0"
+  }
+}

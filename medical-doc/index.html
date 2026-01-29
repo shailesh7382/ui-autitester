@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Documentation System</title>
+    <link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Medical Documentation System</h1>
+            <nav>
+                <button id="nav-patient" class="nav-btn active">Patient Profile</button>
+                <button id="nav-history" class="nav-btn">Case History</button>
+                <button id="nav-reports" class="nav-btn">Examination Reports</button>
+                <button id="nav-view" class="nav-btn">Consolidated View</button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Patient Profile Section -->
+            <section id="patient-section" class="section active">
+                <h2>Patient Profile</h2>
+                <form id="patient-form">
+                    <div class="form-group">
+                        <label for="patient-name">Full Name *</label>
+                        <input type="text" id="patient-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="patient-age">Age *</label>
+                        <input type="number" id="patient-age" min="0" max="150" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="patient-gender">Gender *</label>
+                        <select id="patient-gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="patient-dob">Date of Birth *</label>
+                        <input type="date" id="patient-dob" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="patient-blood-group">Blood Group</label>
+                        <input type="text" id="patient-blood-group" placeholder="e.g., A+, O-, AB+">
+                    </div>
+                    <div class="form-group">
+                        <label for="patient-contact">Contact Number</label>
+                        <input type="tel" id="patient-contact" placeholder="Phone number">
+                    </div>
+                    <div class="form-group">
+                        <label for="patient-email">Email</label>
+                        <input type="email" id="patient-email" placeholder="email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="patient-address">Address</label>
+                        <textarea id="patient-address" rows="3"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save Patient</button>
+                        <button type="button" id="clear-patient" class="btn btn-secondary">Clear Form</button>
+                    </div>
+                </form>
+                <div id="patient-list" class="patient-list">
+                    <h3>Saved Patients</h3>
+                    <div id="patient-cards"></div>
+                </div>
+            </section>
+
+            <!-- Case History Section -->
+            <section id="history-section" class="section">
+                <h2>Case History</h2>
+                <div class="patient-selector">
+                    <label for="history-patient-select">Select Patient *</label>
+                    <select id="history-patient-select">
+                        <option value="">-- Select a patient --</option>
+                    </select>
+                </div>
+                <form id="history-form">
+                    <div class="form-group">
+                        <label for="history-date">Date *</label>
+                        <input type="date" id="history-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="history-complaint">Chief Complaint *</label>
+                        <textarea id="history-complaint" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="history-symptoms">Symptoms</label>
+                        <textarea id="history-symptoms" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="history-diagnosis">Diagnosis</label>
+                        <textarea id="history-diagnosis" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="history-treatment">Treatment/Medication</label>
+                        <textarea id="history-treatment" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="history-notes">Additional Notes</label>
+                        <textarea id="history-notes" rows="3"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save Case History</button>
+                        <button type="button" id="clear-history" class="btn btn-secondary">Clear Form</button>
+                    </div>
+                </form>
+                <div id="history-list" class="history-list">
+                    <h3>Case Histories</h3>
+                    <div id="history-cards"></div>
+                </div>
+            </section>
+
+            <!-- Examination Reports Section -->
+            <section id="reports-section" class="section">
+                <h2>Examination Reports</h2>
+                <div class="patient-selector">
+                    <label for="report-patient-select">Select Patient *</label>
+                    <select id="report-patient-select">
+                        <option value="">-- Select a patient --</option>
+                    </select>
+                </div>
+                <form id="report-form">
+                    <div class="form-group">
+                        <label for="report-date">Report Date *</label>
+                        <input type="date" id="report-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="report-type">Report Type *</label>
+                        <select id="report-type" required>
+                            <option value="">Select Type</option>
+                            <option value="blood-test">Blood Test</option>
+                            <option value="x-ray">X-Ray</option>
+                            <option value="mri">MRI</option>
+                            <option value="ct-scan">CT Scan</option>
+                            <option value="ultrasound">Ultrasound</option>
+                            <option value="ecg">ECG</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="report-title">Report Title *</label>
+                        <input type="text" id="report-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="report-findings">Findings</label>
+                        <textarea id="report-findings" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="report-file">Upload Report File</label>
+                        <input type="file" id="report-file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                        <small>Supported formats: PDF, Images (JPG, PNG), Word Documents</small>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save Report</button>
+                        <button type="button" id="clear-report" class="btn btn-secondary">Clear Form</button>
+                    </div>
+                </form>
+                <div id="report-list" class="report-list">
+                    <h3>Examination Reports</h3>
+                    <div id="report-cards"></div>
+                </div>
+            </section>
+
+            <!-- Consolidated View Section -->
+            <section id="view-section" class="section">
+                <h2>Consolidated View</h2>
+                <div class="patient-selector">
+                    <label for="view-patient-select">Select Patient *</label>
+                    <select id="view-patient-select">
+                        <option value="">-- Select a patient --</option>
+                    </select>
+                </div>
+                <div id="consolidated-view" class="consolidated-view">
+                    <!-- Patient details will be displayed here -->
+                </div>
+            </section>
+        </main>
+
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <script src="src/db.js"></script>
+    <script src="src/app.js"></script>
+</body>
+</html>
