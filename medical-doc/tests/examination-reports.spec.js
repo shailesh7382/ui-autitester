@@ -3,8 +3,8 @@ import path from 'path';
 
 test.describe('Medical Documentation System - Examination Reports', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    await page.waitForFunction(() => window.medicalDB && window.medicalDB.db !== null);
+    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.waitForFunction(() => window.medicalDB && window.medicalDB.db !== null, { timeout: 10000 });
     await page.evaluate(() => window.medicalDB.clearAll());
 
     // Create a test patient first

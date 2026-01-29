@@ -2,9 +2,9 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Medical Documentation System - Patient Profile', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'networkidle' });
     // Wait for the database to initialize
-    await page.waitForFunction(() => window.medicalDB && window.medicalDB.db !== null);
+    await page.waitForFunction(() => window.medicalDB && window.medicalDB.db !== null, { timeout: 10000 });
     // Clear all data before each test
     await page.evaluate(() => window.medicalDB.clearAll());
   });

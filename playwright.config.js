@@ -11,6 +11,7 @@ export default defineConfig({
     baseURL: 'http://localhost:8080',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    timeout: 30000,
   },
 
   projects: [
@@ -24,5 +25,6 @@ export default defineConfig({
     command: 'npx http-server medical-doc -p 8080',
     port: 8080,
     reuseExistingServer: !process.env.CI,
+    timeout: 120000,
   },
 });

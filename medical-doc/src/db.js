@@ -229,3 +229,4 @@ class MedicalDB {
 
 // Create a global instance
 const medicalDB = new MedicalDB();
+window.medicalDB = medicalDB;

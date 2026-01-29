@@ -2,8 +2,8 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Medical Documentation System - Consolidated View', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
-    await page.waitForFunction(() => window.medicalDB && window.medicalDB.db !== null);
+    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.waitForFunction(() => window.medicalDB && window.medicalDB.db !== null, { timeout: 10000 });
     await page.evaluate(() => window.medicalDB.clearAll());
 
     // Create a test patient

@@ -522,6 +522,7 @@ class MedicalApp {
 
 // Initialize the application
 const app = new MedicalApp();
+window.app = app;
 document.addEventListener('DOMContentLoaded', () => {
     app.init();
 });
