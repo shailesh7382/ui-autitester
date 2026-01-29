@@ -9,6 +9,12 @@
     "test:ui": "npx playwright test --ui",
     "test:headed": "npx playwright test --headed",
     "test:report": "npx playwright show-report",
+    "test:debug": "npx playwright test --debug",
+    "test:chromium": "npx playwright test --project=chromium",
+    "test:patient": "npx playwright test patient.spec.js",
+    "test:case-history": "npx playwright test case-history.spec.js",
+    "test:reports": "npx playwright test examination-reports.spec.js",
+    "test:view": "npx playwright test consolidated-view.spec.js",
     "serve": "npx http-server medical-doc -p 8080"
   },
   "keywords": [],

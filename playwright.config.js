@@ -8,7 +8,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : 1,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:8080',
+    baseURL: process.env.BASE_URL || 'http://localhost:8080',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     timeout: 30000,
@@ -21,10 +21,13 @@ export default defineConfig({
     },
   ],
 
-  webServer: {
-    command: 'npx http-server medical-doc -p 8080',
-    port: 8080,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000,
-  },
+  // Only start local server if BASE_URL is not provided
+  ...(process.env.BASE_URL ? {} : {
+    webServer: {
+      command: 'npx http-server medical-doc -p 8080',
+      port: 8080,
+      reuseExistingServer: !process.env.CI,
+      timeout: 120000,
+    },
+  }),
 });
