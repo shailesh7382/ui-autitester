@@ -23,6 +23,11 @@ class MedicalDB {
                 const db = event.target.result;
 
                 // Create object stores if they don't exist
+                if (!db.objectStoreNames.contains('users')) {
+                    const userStore = db.createObjectStore('users', { keyPath: 'id', autoIncrement: true });
+                    userStore.createIndex('username', 'username', { unique: true });
+                }
+
                 if (!db.objectStoreNames.contains('patients')) {
                     const patientStore = db.createObjectStore('patients', { keyPath: 'id', autoIncrement: true });
                     patientStore.createIndex('name', 'name', { unique: false });
@@ -211,9 +216,45 @@ class MedicalDB {
         return this.delete('examinationReports', id);
     }
 
+    // User-specific methods
+    async addUser(userData) {
+        return this.add('users', userData);
+    }
+
+    async getAllUsers() {
+        return this.getAll('users');
+    }
+
+    async getUserByUsername(username) {
+        return this.getByIndex('users', 'username', username).then(users => users[0]);
+    }
+
+    async updateUser(userData) {
+        return this.update('users', userData);
+    }
+
+    async deleteUser(id) {
+        return this.delete('users', id);
+    }
+
     // Clear all data (useful for testing)
     async clearAll() {
         const stores = ['patients', 'caseHistories', 'examinationReports'];
+        for (const storeName of stores) {
+            await new Promise((resolve, reject) => {
+                const transaction = this.db.transaction([storeName], 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.clear();
+
+                request.onsuccess = () => resolve(true);
+                request.onerror = () => reject(new Error(`Failed to clear ${storeName}`));
+            });
+        }
+    }
+
+    // Clear all data including users (for complete reset)
+    async clearAllIncludingUsers() {
+        const stores = ['users', 'patients', 'caseHistories', 'examinationReports'];
         for (const storeName of stores) {
             await new Promise((resolve, reject) => {
                 const transaction = this.db.transaction([storeName], 'readwrite');

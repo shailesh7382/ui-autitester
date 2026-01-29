@@ -3,10 +3,28 @@ class MedicalApp {
     constructor() {
         this.currentSection = 'patient-section';
         this.selectedPatientId = null;
+        this.authToken = null;
     }
 
     async init() {
         try {
+            // Initialize auth service first
+            await authService.init();
+            
+            // Check authentication
+            if (!authService.requireAuth()) {
+                return; // Will redirect to login
+            }
+
+            // Store auth token for API calls
+            this.authToken = authService.getAuthToken();
+
+            // Display current user
+            const currentUser = authService.getCurrentUser();
+            if (currentUser) {
+                document.getElementById('current-user').textContent = `Welcome, ${currentUser.username}`;
+            }
+
             await medicalDB.init();
             this.setupEventListeners();
             await this.loadPatients();
@@ -21,6 +39,11 @@ class MedicalApp {
         // Navigation
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', (e) => this.handleNavigation(e));
+        });
+
+        // Logout button
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            authService.logout();
         });
 
         // Patient form

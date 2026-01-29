@@ -9,7 +9,13 @@
 <body>
     <div class="container">
         <header>
-            <h1>Medical Documentation System</h1>
+            <div class="header-content">
+                <h1>Medical Documentation System</h1>
+                <div class="user-info">
+                    <span id="current-user" class="username"></span>
+                    <button id="logout-btn" class="btn btn-secondary btn-small">Logout</button>
+                </div>
+            </div>
             <nav>
                 <button id="nav-patient" class="nav-btn active">Patient Profile</button>
                 <button id="nav-history" class="nav-btn">Case History</button>
@@ -186,6 +192,7 @@
     </div>
 
     <script src="src/db.js"></script>
+    <script src="src/auth.js"></script>
     <script src="src/app.js"></script>
 </body>
 </html>
