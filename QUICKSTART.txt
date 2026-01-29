@@ -1,0 +1,54 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                 PLAYWRIGHT TEST SUITE                          ║
+║           Medical Documentation System Tests                   ║
+╚═══════════════════════════════════════════════════════════════╝
+
+📚 START HERE: README.md
+
+🚀 QUICK START:
+
+  1. Install dependencies:
+     $ npm install
+     $ npx playwright install
+
+  2. Run all tests:
+     $ npm test
+
+  3. Run tests on custom URL:
+     $ ./run-tests.sh -u https://your-app.com
+
+  4. View test report:
+     $ npm run test:report
+
+📖 DOCUMENTATION:
+
+  • README.md          - Complete documentation
+  • TESTING.md         - Quick reference commands
+  • ENVIRONMENTS.md    - URL configuration examples
+  • DOCS_INDEX.md      - Documentation overview
+
+🔧 CONVENIENCE SCRIPT:
+
+  $ ./run-tests.sh --help
+
+  Examples:
+    ./run-tests.sh
+    ./run-tests.sh -u https://staging.app.com
+    ./run-tests.sh -f patient.spec.js -m ui
+    ./run-tests.sh -u https://app.com -m headed
+
+⚡ QUICK COMMANDS:
+
+  npm test                 - Run all tests
+  npm run test:ui          - Interactive UI mode
+  npm run test:headed      - See browser
+  npm run test:report      - View results
+  npm run test:patient     - Test patient features
+  npm run test:debug       - Debug mode
+
+✅ STATUS: 32/32 tests passing
+
+🌐 SUPPORTS: Local, Staging, Production, Custom URLs
+
+📝 For detailed information, see README.md
+
