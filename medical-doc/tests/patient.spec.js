@@ -2,7 +2,15 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Medical Documentation System - Patient Profile', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
+    // Login first
+    await page.goto('/login.html', { waitUntil: 'networkidle' });
+    await page.waitForFunction(() => window.authService && window.medicalDB && window.medicalDB.db !== null, { timeout: 10000 });
+    
+    await page.fill('#username', 'admin');
+    await page.fill('#password', 'admin');
+    await page.click('#login-btn');
+    
+    await page.waitForURL('**/index.html', { timeout: 10000 });
     // Wait for the database to initialize
     await page.waitForFunction(() => window.medicalDB && window.medicalDB.db !== null, { timeout: 10000 });
     // Clear all data before each test
