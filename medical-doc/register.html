@@ -342,13 +342,22 @@
             const alertClass = type === 'error' ? 'error' : 'success';
             const iconType = type === 'error' ? '✕' : '✓';
             
-            // Update new alert box
-            alertContainer.innerHTML = `
-                <div class="alert-box ${alertClass}">
-                    <span class="alert-icon">${iconType}</span>
-                    <span>${message}</span>
-                </div>
-            `;
+            // Create alert box element safely
+            const alertBox = document.createElement('div');
+            alertBox.className = `alert-box ${alertClass}`;
+            
+            const iconSpan = document.createElement('span');
+            iconSpan.className = 'alert-icon';
+            iconSpan.textContent = iconType;
+            
+            const messageSpan = document.createElement('span');
+            messageSpan.textContent = message;
+            
+            alertBox.appendChild(iconSpan);
+            alertBox.appendChild(messageSpan);
+            
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alertBox);
             
             // Also update old elements for test compatibility
             if (type === 'error') {
