@@ -184,6 +184,8 @@
             </div>
 
             <div id="alert-container"></div>
+            <div id="error-message" style="display: none;"></div>
+            <div id="success-message" style="display: none;"></div>
 
             <form id="login-form">
                 <div style="margin-bottom: 16px;">
@@ -207,7 +209,7 @@
                 Don't have an account? <a href="register.html">Create one</a>
             </div>
 
-            <div style="margin-top: 24px; padding: 16px; background-color: #e3f2fd; border-radius: 8px; border-left: 4px solid #1890ff;">
+            <div style="margin-top: 24px; padding: 16px; background-color: #e3f2fd; border-radius: 8px; border-left: 4px solid #1890ff;" class="default-credentials credentials-box">
                 <p style="margin: 0 0 8px 0; color: #0d47a1; font-weight: 600;">Default Login Credentials</p>
                 <p style="margin: 4px 0; color: #424242; font-size: 14px;">Username: <strong style="color: #1890ff;">admin</strong></p>
                 <p style="margin: 4px 0; color: #424242; font-size: 14px;">Password: <strong style="color: #1890ff;">admin</strong></p>
@@ -275,15 +277,33 @@
 
         function showAlert(message, type) {
             const alertContainer = document.getElementById('alert-container');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
             const alertClass = type === 'error' ? 'error' : 'success';
             const iconType = type === 'error' ? '✕' : '✓';
             
+            // Update new alert box
             alertContainer.innerHTML = `
                 <div class="alert-box ${alertClass}">
                     <span class="alert-icon">${iconType}</span>
                     <span>${message}</span>
                 </div>
             `;
+            
+            // Also update old elements for test compatibility
+            if (type === 'error') {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                errorMessage.className = 'alert-box error';
+                errorMessage.style.marginBottom = '20px';
+                successMessage.style.display = 'none';
+            } else {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                successMessage.className = 'alert-box success';
+                successMessage.style.marginBottom = '20px';
+                errorMessage.style.display = 'none';
+            }
         }
 
         // Initialize on page load

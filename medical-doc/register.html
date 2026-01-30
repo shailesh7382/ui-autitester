@@ -167,6 +167,8 @@
             </div>
 
             <div id="alert-container"></div>
+            <div id="error-message" style="display: none;"></div>
+            <div id="success-message" style="display: none;"></div>
 
             <form id="register-form">
                 <div style="margin-bottom: 16px;">
@@ -335,15 +337,33 @@
 
         function showAlert(message, type) {
             const alertContainer = document.getElementById('alert-container');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
             const alertClass = type === 'error' ? 'error' : 'success';
             const iconType = type === 'error' ? '✕' : '✓';
             
+            // Update new alert box
             alertContainer.innerHTML = `
                 <div class="alert-box ${alertClass}">
                     <span class="alert-icon">${iconType}</span>
                     <span>${message}</span>
                 </div>
             `;
+            
+            // Also update old elements for test compatibility
+            if (type === 'error') {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                errorMessage.className = 'alert-box error';
+                errorMessage.style.marginBottom = '20px';
+                successMessage.style.display = 'none';
+            } else {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                successMessage.className = 'alert-box success';
+                successMessage.style.marginBottom = '20px';
+                errorMessage.style.display = 'none';
+            }
         }
 
         // Initialize on page load
