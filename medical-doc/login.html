@@ -6,173 +6,214 @@
     <title>Login - Medical Documentation System</title>
     <link rel="stylesheet" href="src/styles.css">
     <style>
-        .login-container {
-            max-width: 400px;
-            margin: 100px auto;
-            padding: 40px;
+        body {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+        }
+
+        .login-card {
             background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+            padding: 40px;
         }
 
         .login-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
+        }
+
+        .login-header .medical-icon {
+            font-size: 48px;
+            color: #1890ff;
+            margin-bottom: 16px;
         }
 
         .login-header h1 {
-            color: #2c3e50;
-            font-size: 24px;
-            margin-bottom: 10px;
+            color: #0d47a1;
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 600;
         }
 
         .login-header p {
-            color: #7f8c8d;
-            font-size: 14px;
+            color: #607d8b;
+            font-size: 15px;
         }
 
-        .login-form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            color: #2c3e50;
-            font-weight: 500;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #3498db;
-        }
-
-        .btn-login {
-            padding: 12px;
-            background-color: #3498db;
-            color: white;
+        .ant-card {
             border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-bottom: 15px;
+            border-radius: 12px;
         }
 
-        .btn-login:hover {
-            background-color: #2980b9;
+        .alert-box {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .btn-login:disabled {
-            background-color: #95a5a6;
-            cursor: not-allowed;
+        .alert-box.error {
+            background-color: #fff2f0;
+            border: 1px solid #ffccc7;
+            color: #ff4d4f;
+        }
+
+        .alert-box.success {
+            background-color: #f6ffed;
+            border: 1px solid #b7eb8f;
+            color: #52c41a;
+        }
+
+        .alert-icon {
+            font-size: 18px;
+            font-weight: bold;
         }
 
         .register-link {
             text-align: center;
-            margin-top: 15px;
-            color: #7f8c8d;
+            margin-top: 20px;
+            color: #607d8b;
+            font-size: 14px;
         }
 
         .register-link a {
-            color: #3498db;
+            color: #1890ff;
             text-decoration: none;
+            font-weight: 500;
         }
 
         .register-link a:hover {
             text-decoration: underline;
         }
 
-        .error-message {
-            background-color: #e74c3c;
+        .ant-btn-primary {
+            width: 100%;
+            height: 42px;
+            font-size: 16px;
+            font-weight: 500;
+            background: linear-gradient(135deg, #1890ff 0%, #0050b3 100%);
+            border: none;
+            border-radius: 6px;
             color: white;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            display: none;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
-        .error-message.show {
-            display: block;
+        .ant-btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #40a9ff 0%, #1890ff 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
         }
 
-        .success-message {
-            background-color: #2ecc71;
-            color: white;
-            padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 15px;
-            display: none;
+        .ant-btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
-        .success-message.show {
-            display: block;
-        }
-
-        .default-credentials {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            border-left: 4px solid #3498db;
-        }
-
-        .default-credentials p {
-            margin: 5px 0;
+        .ant-input {
+            width: 100%;
+            height: 42px;
+            padding: 0 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
             font-size: 14px;
-            color: #2c3e50;
+            transition: all 0.3s;
         }
 
-        .default-credentials strong {
-            color: #3498db;
+        .ant-input:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1);
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #0d47a1;
+            font-weight: 500;
+        }
+
+        .form-item {
+            margin-bottom: 16px;
+        }
+
+        .credentials-box {
+            margin-top: 24px;
+            padding: 16px;
+            background-color: #e3f2fd;
+            border-radius: 8px;
+            border-left: 4px solid #1890ff;
+        }
+
+        .credentials-box p {
+            margin: 4px 0;
+            color: #424242;
+            font-size: 14px;
+        }
+
+        .credentials-box .title {
+            margin: 0 0 8px 0;
+            color: #0d47a1;
+            font-weight: 600;
+        }
+
+        .credentials-box strong {
+            color: #1890ff;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-header">
-            <h1>Medical Documentation System</h1>
-            <p>Please login to continue</p>
-        </div>
-
-        <div class="default-credentials">
-            <p><strong>Default Login:</strong></p>
-            <p>Username: <strong>admin</strong></p>
-            <p>Password: <strong>admin</strong></p>
-        </div>
-
-        <div id="error-message" class="error-message"></div>
-        <div id="success-message" class="success-message"></div>
-
-        <form id="login-form" class="login-form">
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required autocomplete="username">
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="medical-icon">⚕️</div>
+                <h1>Medical Documentation System</h1>
+                <p>Secure Healthcare Records Management</p>
             </div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required autocomplete="current-password">
+            <div id="alert-container"></div>
+            <div id="error-message" style="display: none;"></div>
+            <div id="success-message" style="display: none;"></div>
+
+            <form id="login-form">
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 8px; color: #0d47a1; font-weight: 500;">Username</label>
+                    <input type="text" id="username" name="username" required autocomplete="username" 
+                           class="ant-input" placeholder="Enter your username" />
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; margin-bottom: 8px; color: #0d47a1; font-weight: 500;">Password</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password" 
+                           class="ant-input" placeholder="Enter your password" />
+                </div>
+
+                <button type="submit" class="ant-btn ant-btn-primary" id="login-btn" style="width: 100%;">
+                    Login
+                </button>
+            </form>
+
+            <div class="register-link">
+                Don't have an account? <a href="register.html">Create one</a>
             </div>
 
-            <button type="submit" class="btn-login" id="login-btn">Login</button>
-        </form>
-
-        <div class="register-link">
-            Don't have an account? <a href="register.html">Create one</a>
+            <div class="default-credentials credentials-box">
+                <p class="title">Default Login Credentials</p>
+                <p>Username: <strong>admin</strong></p>
+                <p>Password: <strong>admin</strong></p>
+            </div>
         </div>
     </div>
 
@@ -195,7 +236,7 @@
                 }
             } catch (error) {
                 console.error('Initialization error:', error);
-                showError('Failed to initialize. Please refresh the page.');
+                showAlert('Failed to initialize. Please refresh the page.', 'error');
             } finally {
                 isInitializing = false;
             }
@@ -207,47 +248,71 @@
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const loginBtn = document.getElementById('login-btn');
+            const alertContainer = document.getElementById('alert-container');
 
             if (!username || !password) {
-                showError('Please enter both username and password');
+                showAlert('Please enter both username and password', 'error');
                 return;
             }
 
             loginBtn.disabled = true;
             loginBtn.textContent = 'Logging in...';
-            hideMessages();
+            alertContainer.innerHTML = '';
 
             try {
                 const result = await authService.login(username, password);
                 
                 if (result.success) {
-                    showSuccess('Login successful! Redirecting...');
+                    showAlert('Login successful! Redirecting...', 'success');
                     setTimeout(() => {
                         window.location.href = 'index.html';
                     }, 1000);
                 }
             } catch (error) {
-                showError(error.message || 'Login failed. Please try again.');
+                showAlert(error.message || 'Login failed. Please try again.', 'error');
                 loginBtn.disabled = false;
                 loginBtn.textContent = 'Login';
             }
         });
 
-        function showError(message) {
-            const errorDiv = document.getElementById('error-message');
-            errorDiv.textContent = message;
-            errorDiv.classList.add('show');
-        }
-
-        function showSuccess(message) {
-            const successDiv = document.getElementById('success-message');
-            successDiv.textContent = message;
-            successDiv.classList.add('show');
-        }
-
-        function hideMessages() {
-            document.getElementById('error-message').classList.remove('show');
-            document.getElementById('success-message').classList.remove('show');
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alert-container');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            const alertClass = type === 'error' ? 'error' : 'success';
+            const iconType = type === 'error' ? '✕' : '✓';
+            
+            // Create alert box element safely
+            const alertBox = document.createElement('div');
+            alertBox.className = `alert-box ${alertClass}`;
+            
+            const iconSpan = document.createElement('span');
+            iconSpan.className = 'alert-icon';
+            iconSpan.textContent = iconType;
+            
+            const messageSpan = document.createElement('span');
+            messageSpan.textContent = message;
+            
+            alertBox.appendChild(iconSpan);
+            alertBox.appendChild(messageSpan);
+            
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alertBox);
+            
+            // Also update old elements for test compatibility
+            if (type === 'error') {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                errorMessage.className = 'alert-box error';
+                errorMessage.style.marginBottom = '20px';
+                successMessage.style.display = 'none';
+            } else {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                successMessage.className = 'alert-box success';
+                successMessage.style.marginBottom = '20px';
+                errorMessage.style.display = 'none';
+            }
         }
 
         // Initialize on page load
