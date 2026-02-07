@@ -10,3 +10,12 @@ test-results/
 /.idea/ui-autitester.iml
 /.idea/vcs.xml
 /.idea/workspace.xml
+/.idea/copilot.data.migration.agent.xml
+/.idea/copilot.data.migration.ask.xml
+/.idea/copilot.data.migration.edit.xml
+/medical-doc/.pptx-assets/medical-doc-architecture.png
+/medical-doc/out/medical-doc-architecture.png
+/medical-doc/medical-doc-architecture.png
+/medical-doc/medical-doc-architecture.pptx
+/medical-doc/.pptx-assets/medical-doc-architecture.puml
+/medical-doc/medical-doc-architecture-native.pptx

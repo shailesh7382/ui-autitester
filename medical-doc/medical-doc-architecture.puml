@@ -1,0 +1,67 @@
+@startuml
+title Medical Documentation System (medical-doc) - High Level Architecture
+
+skinparam packageStyle rectangle
+skinparam componentStyle rectangle
+skinparam shadowing false
+
+actor User
+
+package "UI Pages" {
+  rectangle "login.html" as LoginPage
+  rectangle "register.html" as RegisterPage
+  rectangle "index.html\n(Main App Shell)" as IndexPage
+}
+
+package "Frontend JS (medical-doc/src)" {
+  component "MedicalApp\n(app.js)" as MedicalApp
+  component "AuthService\n(auth.js)" as AuthService
+  component "MedicalDB\n(db.js)" as MedicalDB
+}
+
+database "IndexedDB\nMedicalDocDB" as IndexedDB
+storage "Browser LocalStorage\n(authToken, currentUser)" as LocalStorage
+
+' User navigation
+User --> LoginPage : open / login
+User --> RegisterPage : register
+User --> IndexPage : use app
+
+' Script loading / wiring
+IndexPage ..> MedicalDB : loads
+IndexPage ..> AuthService : loads
+IndexPage ..> MedicalApp : loads
+
+LoginPage ..> MedicalDB : loads
+LoginPage ..> AuthService : loads
+
+RegisterPage ..> MedicalDB : loads
+RegisterPage ..> AuthService : loads
+
+' Runtime interactions
+MedicalApp --> AuthService : init(), requireAuth(), logout()
+MedicalApp --> MedicalDB : init(), CRUD patients\nCRUD case histories\nCRUD reports
+
+AuthService --> MedicalDB : createDefaultAdmin()\ngetUserByUsername()\naddUser()
+AuthService --> LocalStorage : persist session\n(read/write)
+AuthService --> IndexPage : redirect (login/logout)
+
+MedicalDB --> IndexedDB : open()/upgrade\nobject stores + indexes\ntransactions
+
+note right of MedicalDB
+Object stores
+- users (index: username unique)
+- patients (indexes: name, email)
+- caseHistories (indexes: patientId, date)
+- examinationReports (indexes: patientId, date, type)
+end note
+
+note right of MedicalApp
+Main workflows
+- Patient profile CRUD
+- Case history CRUD (by patient)
+- Examination report CRUD (by patient)
+- Consolidated view (patient + related data)
+end note
+
+@enduml
