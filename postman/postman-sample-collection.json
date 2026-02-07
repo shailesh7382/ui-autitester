@@ -1,0 +1,658 @@
+{
+	"info": {
+		"name": "Sample Postman Collection",
+		"_postman_id": "35567af6-6b92-26c2-561a-21fe8aeeb1ea",
+		"description": "A sample collection to demonstrate collections as a set of related requests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"collectionVariables": [
+		{
+			"key": "baseUrl",
+			"value": "https://postman-echo.com",
+			"type": "string"
+		},
+		{
+			"key": "source",
+			"value": "newman-sample-github-collection",
+			"type": "string"
+		},
+		{
+			"key": "httpbinBaseUrl",
+			"value": "https://httpbin.org",
+			"type": "string"
+		},
+		{
+			"key": "httpbinUser",
+			"value": "user",
+			"type": "string"
+		},
+		{
+			"key": "httpbinPass",
+			"value": "passwd",
+			"type": "string"
+		},
+		{
+			"key": "bearerToken",
+			"value": "my-demo-token",
+			"type": "string"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Attach a request correlation id to every request in this collection.",
+					"// Useful when running in CI to tie request/response logs together.",
+					"pm.collectionVariables.set('requestId', pm.variables.replaceIn('{{$guid}}'));",
+					"pm.request.headers.upsert({ key: 'X-Request-Id', value: pm.collectionVariables.get('requestId') });"
+				]
+			}
+		}
+	],
+	"item": [
+		{
+			"name": "Newman: GET request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('status is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test('response time under 2s', function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"pm.test('content-type is json', function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+							"});",
+							"pm.test('response json contains expected args.source', function () {",
+							"    var json = pm.response.json();",
+							"    var expectedSource = pm.variables.get('source');",
+							"    pm.expect(json).to.have.property('args');",
+							"    pm.expect(json.args).to.have.property('source');",
+							"    pm.expect(json.args.source).to.equal(expectedSource);",
+							"});",
+							"pm.test('request id was generated and set', function () {",
+							"    pm.expect(pm.collectionVariables.get('requestId')).to.be.a('string').and.not.empty;",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": {
+					"raw": "{{baseUrl}}/get?source={{source}}",
+					"protocol": "https",
+					"host": [
+						"postman-echo",
+						"com"
+					],
+					"path": [
+						"get"
+					],
+					"query": [
+						{
+							"key": "source",
+							"value": "{{source}}",
+							"equals": true,
+							"description": ""
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Newman: POST request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('status is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test('content-type is json', function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+							"});",
+							"pm.test('echoed data equals sent raw text', function () {",
+							"    var json = pm.response.json();",
+							"    pm.expect(json).to.have.property('data');",
+							"    pm.expect(json.data).to.equal(pm.request.body.raw);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{baseUrl}}/post",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/plain"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "Duis posuere augue vel cursus pharetra. In luctus a ex nec pretium..."
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Newman: POST request with JSON body",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('status is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test('content-type is json', function () {",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+							"});",
+							"pm.test('echoed json matches the sent payload', function () {",
+							"    var resp = pm.response.json();",
+							"    var sent = JSON.parse(pm.request.body.raw);",
+							"    pm.expect(resp).to.have.property('json');",
+							"    pm.expect(resp.json).to.have.property('text');",
+							"    pm.expect(resp.json.text).to.equal(sent.text);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{baseUrl}}/post",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"text\":\"Duis posuere augue vel cursus pharetra. In luctus a ex nec pretium...\"}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Negative: invalid JSON body on /post returns 400",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('status is 200 (echo service accepts invalid JSON)', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test('response indicates raw body was treated as text', function () {",
+							"    var json = pm.response.json();",
+							"    // For invalid JSON, postman-echo typically sets json=null and data contains the raw text",
+							"    pm.expect(json).to.have.property('json');",
+							"    pm.expect(json.json).to.eql(null);",
+							"    pm.expect(json).to.have.property('data');",
+							"    pm.expect(json.data).to.equal(pm.request.body.raw);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{baseUrl}}/post",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{invalidJson:true"
+				},
+				"description": "Intentional failure path to prove the runner catches non-2xx responses."
+			},
+			"response": []
+		},
+		{
+			"name": "Newman: POST request with JSON from iteration data file",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// If you run Newman with --iteration-data postman/input/patients.json",
+							"// then `pm.iterationData` contains the current row's fields.",
+							"// Without iteration-data (e.g. npm run test:api), we fall back to a small default payload.",
+							"var hasIterationData = pm.iterationData && typeof pm.iterationData.toObject === 'function' && Object.keys(pm.iterationData.toObject() || {}).length > 0;",
+							"var payload = hasIterationData ? pm.iterationData.toObject() : { text: 'default-payload', metadata: { source: 'default' } };",
+							"pm.variables.set('payload', JSON.stringify(payload));"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('status is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test('echoed json matches payload from iteration file', function () {",
+							"    var resp = pm.response.json();",
+							"    var sent = JSON.parse(pm.variables.get('payload'));",
+							"    pm.expect(resp).to.have.property('json');",
+							"    pm.expect(resp.json).to.deep.equal(sent);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{baseUrl}}/post",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{payload}}"
+				},
+				"description": "Reads a JSON object from Newman iteration-data and posts it."
+			},
+			"response": []
+		},
+		{
+			"name": "httpbin: Basic Auth (200)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('status is 200', function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"pm.test('auth is confirmed', function () {",
+							"  var json = pm.response.json();",
+							"  pm.expect(json).to.have.property('authenticated', true);",
+							"  pm.expect(json).to.have.property('user', pm.variables.get('httpbinUser'));",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{httpbinBaseUrl}}/basic-auth/{{httpbinUser}}/{{httpbinPass}}",
+				"method": "GET",
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "{{httpbinUser}}",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "{{httpbinPass}}",
+							"type": "string"
+						}
+					]
+				},
+				"header": [],
+				"description": "Demonstrates Basic Auth handling and validation."
+			},
+			"response": []
+		},
+		{
+			"name": "httpbin: Bearer Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('status is 200', function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"pm.test('bearer token is echoed/parsed', function () {",
+							"  var json = pm.response.json();",
+							"  pm.expect(json).to.have.property('authenticated', true);",
+							"  // httpbin returns the token it parsed",
+							"  pm.expect(json).to.have.property('token', pm.variables.get('bearerToken'));",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{httpbinBaseUrl}}/bearer",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{bearerToken}}"
+					}
+				],
+				"description": "Demonstrates sending Authorization: Bearer <token>."
+			},
+			"response": []
+		},
+		{
+			"name": "httpbin: Set cookie",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('status is 302 or 200', function () {",
+							"  pm.expect([200, 302]).to.include(pm.response.code);",
+							"});",
+							"pm.test('set-cookie header exists (when 302)', function () {",
+							"  // On redirects, httpbin typically includes set-cookie headers",
+							"  pm.expect(pm.response.headers.has('Set-Cookie') || pm.response.code === 200).to.eql(true);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{httpbinBaseUrl}}/cookies/set?sessionId=abc123",
+				"method": "GET",
+				"header": [],
+				"description": "Demonstrates cookie setting via response headers/redirects."
+			},
+			"response": []
+		},
+		{
+			"name": "httpbin: Custom response headers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('status is 200', function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"pm.test('custom header is present', function () {",
+							"  pm.expect(pm.response.headers.get('X-Demo')).to.equal('hello');",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{httpbinBaseUrl}}/response-headers?X-Demo=hello",
+				"method": "GET",
+				"header": [],
+				"description": "Demonstrates validating response headers."
+			},
+			"response": []
+		},
+		{
+			"name": "httpbin: Redirect (single hop)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('status is 302 or 200', function () {",
+							"  // Depending on redirect-following behavior in the runner, you may see 302 or the final 200.",
+							"  pm.expect([200, 302]).to.include(pm.response.code);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{httpbinBaseUrl}}/redirect-to?url=https%3A%2F%2Fhttpbin.org%2Fget&status_code=302",
+				"method": "GET",
+				"header": [],
+				"description": "Demonstrates redirect behavior (302 vs. followed redirect)."
+			},
+			"response": []
+		},
+		{
+			"name": "httpbin: Gzip response",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('status is 200', function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"pm.test('response json indicates gzipped=true', function () {",
+							"  var json = pm.response.json();",
+							"  pm.expect(json).to.have.property('gzipped', true);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{httpbinBaseUrl}}/gzip",
+				"method": "GET",
+				"header": [],
+				"description": "Demonstrates handling compressed responses (server sets Content-Encoding: gzip)."
+			},
+			"response": []
+		},
+		{
+			"name": "httpbin: Delayed response (2s)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('status is 200', function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"pm.test('response time is at least ~2s', function () {",
+							"  pm.expect(pm.response.responseTime).to.be.at.least(1800);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{httpbinBaseUrl}}/delay/2",
+				"method": "GET",
+				"header": [],
+				"description": "Demonstrates a slow endpoint and asserting response time behavior."
+			},
+			"response": []
+		},
+		{
+			"name": "httpbin: Status code matrix (200, 404)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('status is 200', function () {",
+							"  pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{httpbinBaseUrl}}/status/200",
+				"method": "GET",
+				"header": [],
+				"description": "Demonstrates asserting a known status endpoint."
+			},
+			"response": []
+		},
+		{
+			"name": "httpbin: Status code matrix (404)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('status is 404', function () {",
+							"  pm.response.to.have.status(404);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{httpbinBaseUrl}}/status/404",
+				"method": "GET",
+				"header": [],
+				"description": "Demonstrates negative HTTP status assertions (404)."
+			},
+			"response": []
+		},
+		{
+			"name": "httpbin: Stream JSON (10 lines)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.test('status is 200', function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"pm.test('content-type is json', function () {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+							"});",
+							"pm.test('response contains 10 JSON objects (streamed)', function () {",
+							"  // httpbin /stream/N returns N JSON objects separated by newlines (NDJSON style)",
+							"  var text = pm.response.text();",
+							"  var lines = text.trim().split(/\\r?\\n/).filter(Boolean);",
+							"  pm.expect(lines.length).to.eql(10);",
+							"  lines.forEach(function (line) {",
+							"    var obj = JSON.parse(line);",
+							"    pm.expect(obj).to.have.property('id');",
+							"  });",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{httpbinBaseUrl}}/stream/10",
+				"method": "GET",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					}
+				],
+				"description": "Equivalent to: curl -X GET https://httpbin.org/stream/10 -H 'accept: application/json'"
+			},
+			"response": []
+		},
+		{
+			"name": "httpbin: Anything POST (data-driven: path + headers + json)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// Data-driven request.",
+							"// Run with: --iteration-data postman/input/anything-cases.json",
+							"var row = pm.iterationData && typeof pm.iterationData.toObject === 'function' ? pm.iterationData.toObject() : {};",
+							"var anything = row.anything || 'default-anything';",
+							"pm.variables.set('anything', anything);",
+							"pm.variables.set('anythingBody', JSON.stringify(row.body || { ping: true }));",
+							"// Apply per-row headers to the request (in addition to any static headers already defined)",
+							"var hdrs = row.headers || {};",
+							"Object.keys(hdrs).forEach(function (k) { pm.request.headers.upsert({ key: k, value: String(hdrs[k]) }); });"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var resp = pm.response.json();",
+							"var row = pm.iterationData && typeof pm.iterationData.toObject === 'function' ? pm.iterationData.toObject() : {};",
+							"var expected = (row && row.expect) ? row.expect : { status: 200, anything: pm.variables.get('anything'), json: JSON.parse(pm.variables.get('anythingBody')) };",
+							"pm.test('status matches expected', function () {",
+							"  pm.expect(pm.response.code).to.eql(expected.status || 200);",
+							"});",
+							"pm.test('url path contains expected anything', function () {",
+							"  pm.expect(resp).to.have.property('url');",
+							"  pm.expect(resp.url).to.include('/anything/' + expected.anything);",
+							"});",
+							"pm.test('echoed json body matches expected', function () {",
+							"  pm.expect(resp).to.have.property('json');",
+							"  pm.expect(resp.json).to.deep.equal(expected.json);",
+							"});",
+							"pm.test('headers include expected values', function () {",
+							"  if (!expected.headerContains) return;",
+							"  pm.expect(resp).to.have.property('headers');",
+							"  // httpbin returns a mixed-case header map. Normalize to lowercase so tests are stable.",
+							"  var normalized = {};",
+							"  Object.keys(resp.headers || {}).forEach(function (k) { normalized[k.toLowerCase()] = resp.headers[k]; });",
+							"  Object.keys(expected.headerContains).forEach(function (k) {",
+							"    var lk = k.toLowerCase();",
+							"    pm.expect(normalized).to.have.property(lk);",
+							"    pm.expect(String(normalized[lk]).toLowerCase()).to.eql(String(expected.headerContains[k]).toLowerCase());",
+							"  });",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": "{{httpbinBaseUrl}}/anything/{{anything}}",
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{anythingBody}}"
+				},
+				"description": "Equivalent to: curl -X POST https://httpbin.org/anything/{anything} -H 'accept: application/json'"
+			},
+			"response": []
+		}
+	]
+}

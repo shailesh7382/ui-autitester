@@ -1,0 +1,26 @@
+[
+  {
+    "text": "Loaded-from-file: patient note A",
+    "patient": {
+      "id": "p-001",
+      "name": "Alex Smith",
+      "dob": "1985-04-12"
+    },
+    "metadata": {
+      "source": "iteration-file",
+      "run": 1
+    }
+  },
+  {
+    "text": "Loaded-from-file: patient note B",
+    "patient": {
+      "id": "p-002",
+      "name": "Jordan Lee",
+      "dob": "1992-11-03"
+    },
+    "metadata": {
+      "source": "iteration-file",
+      "run": 2
+    }
+  }
+]

@@ -1,0 +1,56 @@
+[
+  {
+    "anything": "demo-1",
+    "headers": {
+      "accept": "application/json",
+      "x-client": "ui-autitester"
+    },
+    "body": {
+      "message": "hello from test case 1",
+      "count": 1
+    },
+    "expect": {
+      "status": 200,
+      "anything": "demo-1",
+      "headerContains": {
+        "accept": "application/json",
+        "x-client": "ui-autitester"
+      },
+      "json": {
+        "message": "hello from test case 1",
+        "count": 1
+      }
+    }
+  },
+  {
+    "anything": "demo-2/subpath",
+    "headers": {
+      "accept": "application/json",
+      "x-client": "ui-autitester",
+      "x-scenario": "case-2"
+    },
+    "body": {
+      "message": "hello from test case 2",
+      "count": 2,
+      "nested": {
+        "ok": true
+      }
+    },
+    "expect": {
+      "status": 200,
+      "anything": "demo-2/subpath",
+      "headerContains": {
+        "accept": "application/json",
+        "x-client": "ui-autitester",
+        "x-scenario": "case-2"
+      },
+      "json": {
+        "message": "hello from test case 2",
+        "count": 2,
+        "nested": {
+          "ok": true
+        }
+      }
+    }
+  }
+]
