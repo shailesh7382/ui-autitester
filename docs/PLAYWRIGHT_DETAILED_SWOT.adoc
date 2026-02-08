@@ -1,0 +1,273 @@
+= Playwright (Detailed) + SWOT Analysis
+:toc: left
+:toclevels: 3
+:sectnums:
+:source-highlighter: rouge
+
+== What is Playwright?
+
+Playwright is an end-to-end (E2E) test automation framework created by Microsoft.
+It drives real browsers (Chromium, Firefox, WebKit) using a modern API and provides a full test runner (`@playwright/test`) with:
+
+* Browser and context management
+* Auto-waiting and resilient locators
+* Parallel execution and sharding
+* Tracing, screenshots, video, and a rich HTML report
+* Network interception, API testing utilities, and test fixtures
+
+In practice, Playwright helps you test your application the way users experience it: through a real browser, interacting with UI controls, navigation, and storage.
+
+== Why Playwright is popular
+
+=== 1) Cross-browser automation with one API
+
+Playwright supports:
+
+* Chromium (Chrome/Edge-like)
+* Firefox
+* WebKit (Safari-like)
+
+This is valuable when you want confidence that critical flows work across browser engines.
+
+*In this project:* `playwright.config.js` defines a `chromium` project:
+
+[source,js]
+----
+projects: [
+  { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+],
+----
+
+You can add Firefox/WebKit projects later when you’re ready, but starting with one engine is a good fit for a local demo app and fast CI.
+
+=== 2) Auto-waiting reduces flakiness
+
+Playwright automatically waits for actionable states (element attached/visible/enabled, navigation finished, etc.).
+Instead of sprinkling manual sleeps, you use assertions and navigation expectations.
+
+*In this project:* tests frequently use:
+
+* `page.goto(..., { waitUntil: 'networkidle' })`
+* `page.waitForURL('**/index.html')`
+* `expect(locator).toHaveText(...)`
+
+This improves stability for flows like login → redirect → app initialization.
+
+=== 3) A first-class test runner: `@playwright/test`
+
+The Playwright test runner provides:
+
+* `test.describe`, `test.beforeEach`, `test.afterEach`
+* fixtures (built-in and custom)
+* retries, timeouts, and per-project configuration
+* reporters (HTML, JUnit, JSON, etc.)
+
+With it, you typically don’t need Jest/Cucumber/Mocha for E2E.
+
+*In this project:* `package.json` uses:
+
+[source,json]
+----
+"scripts": {
+  "test": "npx playwright test",
+  "test:ui": "npx playwright test --ui",
+  "test:headed": "npx playwright test --headed",
+  "test:debug": "npx playwright test --debug",
+  "test:report": "npx playwright show-report"
+}
+----
+
+=== 4) Great debugging tools (trace viewer, inspector, report)
+
+When a test fails, Playwright can collect artifacts that make debugging much faster:
+
+* Screenshot on failure
+* Trace on retry (step-by-step timeline)
+* HTML report with test steps, time, attachments
+
+*In this project:* `playwright.config.js` enables:
+
+[source,js]
+----
+use: {
+  trace: 'on-first-retry',
+  screenshot: 'only-on-failure',
+  timeout: 30000,
+},
+reporter: 'html',
+----
+
+This is especially helpful for flaky UI tests (timing, redirects, IndexedDB init).
+
+=== 5) Web server lifecycle support
+
+Playwright can automatically start a dev server before tests run.
+
+*In this project:* Playwright starts `http-server` on port `8080` when `BASE_URL` isn’t set:
+
+[source,js]
+----
+webServer: {
+  command: 'npx http-server medical-doc -p 8080',
+  port: 8080,
+  reuseExistingServer: !process.env.CI,
+  timeout: 120000,
+},
+----
+
+That lets `npm test` work with a one-liner on fresh machines.
+
+== How Playwright works (architecture-level)
+
+=== Key concepts
+
+* *Browser*: the executable (Chromium/Firefox/WebKit).
+* *BrowserContext*: an isolated, incognito-like session. Separate storage/cookies.
+* *Page*: a tab within a context.
+* *Locator*: a “smart handle” that finds elements and auto-waits.
+* *Test runner*: orchestrates workers, fixtures, retries, reporters.
+
+A typical execution is:
+
+. Start web server (optional)
+. Launch browser (per worker)
+. Create a new context and page (per test by default)
+. Run test steps + assertions
+. Collect artifacts on failure
+. Write HTML report
+
+=== Synchronization model
+
+Playwright’s design encourages *waiting on signals* instead of *sleeping*:
+
+* navigation: `page.waitForURL(...)`
+* UI readiness: `await expect(locator).toBeVisible()`
+* app readiness: `page.waitForFunction(...)`
+
+*In this project:* the app exposes `window.authService` and `window.medicalDB`, so tests use `waitForFunction` to ensure the JS services initialize before interacting.
+
+== How this project benefits from Playwright (concrete examples)
+
+=== 1) End-to-end coverage of critical workflows
+
+This repo tests the core flows of the medical documentation app:
+
+* Authentication + registration: `medical-doc/tests/auth.spec.js`
+* Patient CRUD: `medical-doc/tests/patient.spec.js`
+* Case history CRUD: `medical-doc/tests/case-history.spec.js`
+* Examination reports CRUD: `medical-doc/tests/examination-reports.spec.js`
+* Consolidated view: `medical-doc/tests/consolidated-view.spec.js`
+
+These are real browser-driven tests—so they validate:
+
+* DOM rendering
+* event handling
+* session behavior (LocalStorage)
+* persistence behavior (IndexedDB)
+
+=== 2) Catching regressions in client-side persistence
+
+Your application persists data in IndexedDB and uses LocalStorage for session.
+Pure unit tests won’t exercise those integrations.
+
+*In this project:* tests call `window.medicalDB.clearAll()` inside the app page.
+That approach gives each test a clean slate while still using the real persistence layer.
+
+=== 3) Reliable auth setup via fixtures
+
+The file `medical-doc/tests/auth-fixtures.js` defines a custom fixture `authenticatedPage`.
+This is an idiomatic Playwright pattern: put login and environment setup in a fixture so suites stay clean.
+
+[source,js]
+----
+export const test = base.extend({
+  authenticatedPage: async ({ page }, use) => {
+    await page.goto('/login.html', { waitUntil: 'networkidle' });
+    await page.waitForFunction(() => window.authService && window.medicalDB && window.medicalDB.db !== null);
+    await page.fill('#username', 'admin');
+    await page.fill('#password', 'admin');
+    await page.click('#login-btn');
+    await page.waitForURL('**/index.html');
+    await page.evaluate(() => window.medicalDB.clearAll());
+    await use(page);
+  },
+});
+----
+
+Benefit: you can reuse authenticated setup across suites and reduce duplicated login steps.
+
+=== 4) Local and CI-friendly execution
+
+This repo is optimized for “run anywhere” convenience:
+
+* `run-tests.sh` ensures dependencies and browser binaries exist.
+* Playwright config starts a web server automatically.
+* Retries are enabled only in CI.
+
+This lowers the friction for teammates and makes CI pipelines more dependable.
+
+== SWOT Analysis (Playwright)
+
+[plantuml,playwright-swot,svg]
+----
+@startuml
+title Playwright - SWOT (for ui-autitester context)
+
+skinparam shadowing false
+skinparam roundcorner 10
+skinparam defaultFontName Arial
+
+' Simple 2x2 SWOT layout
+rectangle "**Strengths**\n\n* Auto-waiting reduces flakiness\n* Cross-browser (Chromium/Firefox/WebKit)\n* Strong runner + fixtures\n* Trace/screenshot/reporting\n\n_Project tie-in_\n* HTML report enabled\n* Screenshot on failure\n* Trace on first retry" as S #E8F5E9
+
+rectangle "**Weaknesses**\n\n* E2E slower than unit tests\n* UI selector maintenance\n* Flakiness if using sleeps\n* State (IndexedDB/Storage) isolation needs care\n\n_Project tie-in_\n* Several specs use waitForTimeout()" as W #FFF3E0
+
+rectangle "**Opportunities**\n\n* Reuse storageState for faster auth\n* Expand to Firefox/WebKit projects\n* More fixtures to seed data\n* Add CI-friendly reporters (JUnit/JSON)" as O #E3F2FD
+
+rectangle "**Threats**\n\n* Browser/OS differences in CI\n* App architecture changes (SPA/framework)\n* CI sandbox restrictions (esp. WebKit)\n* Over-reliance on E2E slows feedback" as T #FFEBEE
+
+S -[hidden]-> W
+S -[hidden]-> O
+W -[hidden]-> T
+O -[hidden]-> T
+
+@enduml
+----
+
+== Recommendations for this repo (pragmatic next improvements)
+
+1. *Use the existing auth fixture everywhere*
++
+Replace repeated login steps in `patient.spec.js`, `case-history.spec.js`, etc., with `authenticatedPage`.
+
+2. *Reduce `waitForTimeout` usage*
++
+Prefer `await expect(locator).toContainText(...)` or `await expect(cards).toHaveCount(n)` style waits.
+
+3. *Consider `storageState`*
++
+Login once in a `globalSetup` and reuse session for suites.
+
+4. *Add Firefox/WebKit gradually*
++
+Start with the auth suite as a smoke test across engines.
+
+== Appendix: How to run Playwright in this repo
+
+[source,bash]
+----
+# Run all tests
+npm test
+
+# Interactive UI runner
+npm run test:ui
+
+# Headed mode
+npm run test:headed
+
+# Debug mode
+npm run test:debug
+
+# Open HTML report
+npm run test:report
+----
